@@ -1,0 +1,34 @@
+<!--
+Records any imu frames being published using the duration and name specified by the bash file
+-->
+
+<launch>
+    <arg name = "dur" default="2"/>
+    <arg name = "prefix" default = "imu_recording"/>
+    <node name = "imu_record" pkg = "rosbag" type="record" required="true" output ="screen"
+          args = "-O $(arg prefix) -q --duration=$(arg dur)m
+          /usb_cam/image_raw
+          /l_foot_data_vec
+          /l_lower_leg_data_vec
+          /l_upper_leg_data_vec
+          /r_foot_data_vec
+          /r_lower_leg_data_vec
+          /r_upper_leg_data_vec
+          /mid_data_vec
+          /chest_data_vec
+          /l_shoulder_data_vec
+          /l_upper_arm_data_vec
+          /l_lower_arm_data_vec
+          /l_hand_data_vec
+          /r_shoulder_data_vec
+          /r_upper_arm_data_vec
+          /r_lower_arm_data_vec
+          /r_hand_data_vec
+          /head_data_vec
+	  /temp_1_data_vec
+	  /temp_2_data_vec
+	  /temp_3_data_vec
+	  /temp_4_data_vec
+          "
+    />
+</launch>

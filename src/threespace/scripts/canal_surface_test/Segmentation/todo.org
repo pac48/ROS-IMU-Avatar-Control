@@ -1,0 +1,33 @@
+* DONE Install packages
+** DONE hdf
+URL: http://www.hdfgroup.org/HDF5/release/obtain5.html
+*** DONE Mac
+Installed prebuilt binaries 64bit 1.8.4 patch 1 for mac - didn't work with pytables
+Downloaded source code 1.8.4 patch1
+- ./configure --prefix=/usr/local && make && sudo make install 
+  success
+installed szip via fink
+
+*** DONE Linux
+Installed package on ubuntu
+
+** DONE pytables
+URL: http://www.pytables.org/
+sudo easy_install tables
+** DONE python timeseries
+URL: http://pytseries.sourceforge.net/
+sudo easy_install scikits.timeseries failed
+download source and install worked.  
+import scikits.timeseries fails due to pkg_resources detecting numpy 1.2.1
+did: sudo mv /System/Library/Frameworks/Python.framework/Versions/2.6/Extras/lib/python/numpy-1.2.1-py2.6.egg-info /System/Library/Frameworks/Python.framework/Versions/2.6/Extras/lib/python/numpy_APPLE_DEFAULT/ ~/tmp/python_removed_packages/
+
+Remember: import scipy before scikits.timeseries!
+* TODO Testsuite
+** TODO Sample data
+*** TODO Single straight line segment
+*** TODO Multiple line segments
+*** TODO Polynomial segments
+* TODO Segmentation algorithms
+** Top-down linear
+** Bottom-up linear
+** Multi-objective

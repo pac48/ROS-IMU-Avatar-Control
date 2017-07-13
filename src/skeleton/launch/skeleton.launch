@@ -1,0 +1,37 @@
+<!--
+To be used with the gait detection system, takes the xbee port as an argument, the topic names
+and which measurements to use when publishing messages
+-->
+
+<launch>
+    <node name="recognizer" pkg="pocketsphinx" type="recognizer.py">
+      <param name="lm" value="$(find pocketsphinx)/demo/voice_cmd.lm"/>
+      <param name="dict" value="$(find pocketsphinx)/demo/voice_cmd.dic"/>
+    </node>
+
+    <node name="single_publisher" type="single_publisher.py" pkg="threespace" output="screen"/>
+    <node name="Skeleton_node" pkg="skeleton" type = "Skeleton_node.py" output = "screen" required = "true">
+      <param name="/temp_1_IMU" type="int" value="0"/>
+      <param name="/temp_2_IMU" type="int" value="0"/>
+      <param name="/chest_IMU" type="int" value="0"/>
+      <param name="/l_shoulder_IMU" type="int" value="0"/>
+      <param name="/r_upper_arm_IMU" type="int" value="0"/>
+      <param name="/temp_3_IMU" type="int" value="0"/>
+      <param name="/r_lower_arm_IMU" type="int" value="0"/>
+      <param name="/r_hand_IMU" type="int" value="0"/>
+      <param name="/l_upper_leg_IMU" type="int" value="0"/>
+      <param name="/l_lower_leg_IMU" type="int" value="0"/>
+      <param name="/l_foot" type="int" value="0"/>
+      <param name="/temp_4_IMU" type="int" value="0"/>
+      <param name="/r_lower_leg_IMU" type="int" value="0"/>
+      <param name="/r_foot_IMU" type="int" value="0"/>
+      <param name="/r_shoulder_IMU" type="int" value="0"/>
+      <param name="/temp_5_IMU" type="int" value="0"/>
+      <param name="/temp_6_IMU" type="int" value="0"/>
+      <param name="/l_upper_arm_IMU" type="int" value="0"/>
+      <param name="/l_hand_IMU" type="int" value="0"/>
+    </node>
+    <node name="Blender" pkg="skeleton" type="game" />
+</launch>
+
+

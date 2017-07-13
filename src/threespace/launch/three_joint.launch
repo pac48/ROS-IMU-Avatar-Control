@@ -1,0 +1,14 @@
+<!--
+Launch file for the joint publishing node
+takes the names of the joints as arguments
+-->
+
+<launch>
+    <arg name="upper" default="none"/>
+    <arg name="lower" default="none"/>
+    <arg name="hand" default="none"/>
+    <node name="three_joint" type="three_joint_publisher.py" pkg="threespace_ros" output="screen"/>
+    <param name="upper" type="string" value="$(arg upper)"/>
+    <param name="lower" type="string" value="$(arg lower)"/>
+    <param name="hand" type="string" value="$(arg hand)"/>
+</launch>

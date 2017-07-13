@@ -1,0 +1,20 @@
+<!--
+To be used with the gait detection system, takes the xbee port as an argument, the topic names
+and which measurements to use when publishing messages
+-->
+
+<launch>
+    <arg name="port_live" default="/dev/ttyACM0"/>
+    <node name="live_broadcaster" pkg="threespace_ros" type = "live_broadcaster.py" output = "screen" required = "true">
+        <param name = "rf_n" type="string" value="/r_shoulder_data_vec"/>
+        <param name = "rll_n" type="string" value=""/>
+        <param name = "rul_n" type="string" value="/temp_1_data_vec"/>
+        <param name = "m_n" type="string" value="/l_foot_data_vec"/>
+        <param name = "use_gyro_n" type="int" value="1"/>
+        <param name = "use_accel_n" type="int" value="1"/>
+	<param name = "ir_n" type="int" value="0"/>
+	<param name = "prox_n" type="int" value="0"/>
+	<param name = "fsr_n" type="int" value="1"/>
+	<param name = "port_live" type="string" value="$(arg port_live)"/>
+    </node>
+</launch>

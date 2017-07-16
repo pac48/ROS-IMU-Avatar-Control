@@ -7,3 +7,4 @@ sudo apt-get install gstreamer0.10-gconf
 catkin_make
 
 roslaunch skeleton skeleton.launch
+wEF

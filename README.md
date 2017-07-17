@@ -17,7 +17,7 @@ sudo apt-get install gstreamer0.10-gconf
 
 ```
 cd catkin_ws/src
-git clone https://github.com/pac48/ROS-IMU-Avatar-Control.git
+svn checkout https://github.com/pac48/ROS-IMU-Avatar-Control/trunk/src
 cd ..
 catkin_make
 ```
@@ -26,7 +26,9 @@ catkin_make
 
 The package can be run with the following command:
 
-`roslaunch skeleton skeleton.launch`
+```
+roslaunch skeleton skeleton.launch
+```
 
 If the package fails to launch correctly and a due to the error "No dongles found, exiting", then there is a problem accessing the dongles in the serial port. 
 Make sure you wait at lleast 30 seconds after you plug in the dongle before trying to run the launch command, or you will most likely get this error. If the error persist you
@@ -35,6 +37,21 @@ may have to change the permissions for your serial port. For example:
 ```
 sudo chmod 666 ttyACM0
 sudo chmod 666 ttyACM1
+```
+
+You can also add you account to a group with access to the serial port. 
+
+```
+sudo adduser pac48 dialout
+```
+Finally, if the application crashes due to and you recieve this error:
+
+VMware: vmw_ioctl_command error Invalid argument
+
+Then you can run the following command to permanently fix it. In my case this problem occured because I was running Ubuntu in VMware.
+
+```
+echo "export SVGA_VGPU10=0" >> ~/.bashrc
 ```
 
 The launch file will create four node:

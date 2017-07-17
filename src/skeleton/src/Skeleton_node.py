@@ -10,6 +10,7 @@ from skeleton.msg import gyroQuat
 from std_msgs.msg import String
 
 class Skeleton:
+
     def __init__(self,segments, name):
         self.segments = segments
         self.name=name
@@ -18,12 +19,6 @@ class Skeleton:
         self.node = rospy.init_node('skeleton_node', anonymous=True)
         self.jointAngle_msg = jointAngles()
         self.gyro_msg = gyroQuat()         
-        #for k in list(self.segments):
-        #    for i in list(self.segments[k]): 
-        #        self.segments[k][i].pub = rospy.Publisher(k+'_'+self.segments[k][i].name, jointAngles, queue_size=1)
-        #        self.segments[k][i].node=rospy.init_node(k+'_'+self.segments[k][i].name+'_node', anonymous=True)
-        #        message = jointAngles(Intervertebral=[1,0,0,0])
-        #        self.segments[k][i].pub.publish(message) 
 
     def update(self):
         origin = self.segments['Trunk']['root'].IMU.origin
@@ -33,9 +28,6 @@ class Skeleton:
                     self.segments[k][i].quat=self.segments[k][i].IMU.quat
                     self.segments[k][i].gyro=self.segments[k][i].IMU.gyro
                     self.segments[k][i].IMU.origin = origin
-        #        else:
-        #            self.segments[k][i].quat=[1,0,0,0]
-                    #print(skeleton.segments[k][i].quat)
         stack = [['Trunk','root']]
         while(len(stack)>0):
             child = stack.pop()
@@ -50,17 +42,12 @@ class Skeleton:
                 joint.vel = sub.sub(joint.gyro,self.segments[parent[0]][parent[1]].gyro)
                 if (joint.name=='root'):
                     joint.angle = joint.quat
-                    joint.vel = joint.gyro
-                    #print(joint.name)
-                    #print(joint.quat)
-                #joint.quat = add.add(joint.quat,self.segments[parent[0]][parent[1]].quat)
-                #print(joint.quat)
+                    joint.vel = joint.gyro                
                 L = len(joint.child)
                 if (L>2):
                     for i in range(1,L):
                         stack.append(joint.child[i])
                         joint1 = self.segments[joint.child[i][0]][joint.child[i][1]]
-                        #print(joint.name)
 			child1=joint1.child[0]
                         parent1 = joint1.parent
                         if (joint1.IMU_attached ==0):
@@ -68,43 +55,27 @@ class Skeleton:
                             joint1.gyro = self.segments[parent[0]][parent[1]].gyro
                         joint1.angle = sub.sub(joint1.quat,self.segments[parent[0]][parent[1]].quat)
                         joint1.vel = sub.sub(joint1.gyro,self.segments[parent[0]][parent[1]].gyro)
-                        #print(joint.quat)
             for k in list(self.segments):
                 for i in list(self.segments[k]):
-                    if (self.segments[k][i].IMU_attached == 0):
-                        #self.segments[k][i].quat=[1,0,0,0]
-			#self.segments[k][i].angle=[1,0,0,0]
-                        pass
-                   # if(self.segments[k][i].name=='Elbow_R'):
-                    #    print(self.segments[k][i].quat)
                     if (self.segments[k][i].IMU_attached == 1):  
                         q = self.segments[k][i].angle
-                           # self.segments[k][i].angle = [q[0],q[1],q[3],q[2]]
                     setattr(self.jointAngle_msg,k+'_'+i,self.segments[k][i].angle)
-                    setattr(self.gyro_msg,k+'_'+i,self.segments[k][i].vel)                       
-                 
+                    setattr(self.gyro_msg,k+'_'+i,self.segments[k][i].vel)                                   
             self.pub.publish(self.jointAngle_msg)
-            #self.pubg.publish(self.gyro_msg)
-            #print(self.jointAngle_msg)
+            #self.pubg.publish(self.gyro_msg) uncomment this line if you want to publish the gryo messages
+
     def addParents(self):
         stack = [['Trunk','base']]
-      #  joint = self.segments[stack[0][0]][stack[0][1]]
-       # joint.parent = stack[0]
         while(len(stack)>0):
-            #print(stack)
             child = stack.pop()
             while(child[1] != 0): 
                 joint = self.segments[child[0]][child[1]]
-                #print(joint.name)
                 seg = child[0]
                 child=joint.child[0]
                 try:
                     child_joint = self.segments[child[0]][child[1]]
                     child_joint.parent = [seg,joint.name]
-                    #print(child_joint.parent)
-                    #print(child_joint.name)
                 except:
-                    #print(child_joint.name)
                     pass
                 if (len(joint.child)>2):
                     for i in range(1,len(joint.child)):      
@@ -113,26 +84,16 @@ class Skeleton:
 class imu():
     offset = [1,0,0,0]
     origin = [1,0,0,0]
+
     def __init__(self,topic):
         self.quat = [1,0,0,0]
         self.gyro = [1,0,0,0]
-	#self.origin = [1,0,0,0]
-        self.topic=topic
-        #self.node=rospy.init_node('IMU_listener', anonymous=True)
-        
+        self.topic=topic      
         self.sub=rospy.Subscriber(topic+'_data_vec', dataVec, self.callback,queue_size=1)       
         self.subC = rospy.Subscriber('/recognizer/output', String,self.checkCalibrate, queue_size=1)
-        # spin() simply keeps python from exiting until this node is stopped
-        #rospy.spin()
+
     def callback(self,data):
         rospy.set_param("/Skeleton_node"+self.topic+'_IMU', 1)
-        #self.data= data
-        #print(self.offset)
-        #r = rospy.Rate(120)
-        #r.sleep()
-        #print(data.transforms[0].child_frame_id)
-        #if(data.transforms[0].child_frame_id==self.str):
-        #print('test')
         self.orientation = data.quat.quaternion
         gyro = [data.gyroX,data.gyroY,data.gyroZ]
         theta = math.sqrt(gyro[0]**2+gyro[1]**2+gyro[2]**2)/(80)
@@ -142,41 +103,34 @@ class imu():
         qy = (gyro[0]/n)*s
         qz = -(gyro[1]/n)*s
         qx = -(gyro[2]/n)*s
-        #self.gyro = [q0,qx,qy,qz]
-        #print(self.q_gyro)
-        #self.quat = sub.sub(add.add([self.orientation.w,self.orientation.z,self.orientation.x,self.orientation.y],self.offset),self.offset)
-        #self.quat = sub.sub([self.orientation.w,self.orientation.z,self.orientation.x,self.orientation.y],self.offset)
-        #self.quat = sub.sub(add.add(self.offset,[self.orientation.w,self.orientation.z,self.orientation.x,self.orientation.y]),[1,0,0,0])
-        #self.quat = sub.sub(add.add(sub.sub([1,0,0,0],self.offset),[self.orientation.w,self.orientation.z,self.orientation.x,self.orientation.y]),self.offset)
         self.quat = add.add([self.orientation.w,self.orientation.z,self.orientation.x,self.orientation.y],sub.sub(self.origin,self.offset))
         self.gyro = sub.sub(self.offset,add.add([q0,qz,qx,qy],sub.sub([1,0,0,0],self.offset)))
-            #self.quat = [orientation.w,orientation.y,orientation.z,orientation.x]
+        # you can uncommentthe following lines if you need roll,pitch,and yaw
         #self.roll = math.atan2(2*self.quat[3]*self.quat[0]+2*self.quat[1]*self.quat[2],1-2*self.quat[0]**2-2*self.quat[1]**2)
         #self.pitch = math.asin(2*self.quat[3]*self.quat[1]-2*self.quat[2]*self.quat[0])
         #self.yaw = math.atan2(2*self.quat[3]*self.quat[2]+2*self.quat[0]*self.quat[1],1-2*self.quat[1]**2-2*self.quat[2]**2)
+
     def shutdown(self):
         print(self.topic)
         rospy.signal_shutdown('user terminated')
 
     def checkCalibrate(self,data):
         rospy.set_param("/Skeleton_node"+self.topic+'_IMU', 1)
-        #r = rospy.Rate(10)
-        #r.sleep()
         if (data.data =='start calibrate'):
-            #print('test') 
             self.Calibrate()  
 
     def Calibrate(self):
         try:
             self.offset=[self.orientation.w,self.orientation.z,self.orientation.x,self.orientation.y]
             if (self.topic =='/temp_4'):
-                self.origin = [1,0,0,0] # needs work
+                self.origin = [1,0,0,0] # needs work!
             print('calibarted')
             print(self.offset)
         except:
             pass 
 
 class Joint:
+
     def __init__(self,movements,limitM,limitm,name,num):
         self.angle = [1,0,0,0]
         self.quat = [1,0,0,0]
@@ -192,19 +146,23 @@ class Joint:
         self.parent = [0,0]
         self.pub=[]
         self.node = []
+
     def addIMU(self,IMU):
         self.IMU = IMU
         self.IMU_attached = 1
+
     def flexion(self,rot):
         if("flexion" in self.movements):
             rot = rot/self.num
             self.angle = [rot,self.angle[1],self.angle[2]]
             self.AngleLimit()
+
     def extension(self,rot):
         if("extension" in self.movements):
             rot = -rot/self.num
             self.angle = [rot,self.angle[1],self.angle[2]]
             self.AngleLimit()
+
     def abduction(self,rot):
         if(self.name[len(self.name)-1]=='L'):
             rot=-rot
@@ -212,6 +170,7 @@ class Joint:
             rot = rot/self.num
             self.angle = [self.angle[0],self.angle[1],rot]
             self.AngleLimit()
+
     def adduction(self,rot):
         if(self.name[len(self.name)-1]=='L'):
             rot=-rot
@@ -219,11 +178,13 @@ class Joint:
             rot = -rot/self.num
             self.angle = [self.angle[0],self.angle[1],rot]
             self.AngleLimit()
+
     def rotation(self,rot):
         if("rotation" in self.movements):
             rot = rot/self.num
             self.angle = [self.angle[0],rot,self.angle[2]]
             self.AngleLimit()
+
     def AngleLimit(self):
         if self.angle[0]>self.limitM[0]/self.num:
             self.angle = [self.limitM[0]/self.num,self.angle[1],self.angle[2]]
@@ -361,13 +322,6 @@ skeleton.segments['Trunk']['Intervertebral3'].addIMU(imu('/chest'))
 #skeleton.segments['Leg']['Knee_L'].addIMU(imu('/l_lower_leg'))
 #skeleton.segments['Foot']['Ankle_L'].addIMU(imu('/l_foot'))
 
-
-#'temp_1',
-#'temp_3'
-#'temp_5'
-#'temp_6'
-
-#rospy.sleep(.1)
 while not rospy.is_shutdown():
     r=rospy.Rate(60)
     r.sleep()

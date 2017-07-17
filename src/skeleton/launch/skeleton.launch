@@ -9,7 +9,7 @@ and which measurements to use when publishing messages
       <param name="dict" value="$(find pocketsphinx)/demo/voice_cmd.dic"/>
     </node>
 
-    <node name="single_publisher" type="single_publisher.py" pkg="threespace" output="screen"/>
+    <node name="single_publisher" type="single_publisher.py" pkg="threespace_ros" output="screen"/>
     <node name="Skeleton_node" pkg="skeleton" type = "Skeleton_node.py" output = "screen" required = "true">
       <param name="/temp_1_IMU" type="int" value="0"/>
       <param name="/temp_2_IMU" type="int" value="0"/>

@@ -1,0 +1,41 @@
+Language model created by QuickLM on Thu Jun 15 16:39:43 EDT 2017
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 3 sentences and 6 words
+
+\data\
+ngram 1=6
+ngram 2=7
+ngram 3=5
+
+\1-grams:
+-0.8653 </s> -0.3010
+-0.8653 <s> -0.2374
+-1.3424 CALIBRATE -0.2374
+-1.0414 LISTENING -0.2374
+-1.3424 START -0.2596
+-1.3424 STOP -0.2596
+
+\2-grams:
+-0.7782 <s> CALIBRATE 0.0000
+-0.7782 <s> START 0.0000
+-0.7782 <s> STOP 0.0000
+-0.3010 CALIBRATE </s> -0.3010
+-0.3010 LISTENING </s> -0.3010
+-0.3010 START LISTENING 0.0000
+-0.3010 STOP LISTENING 0.0000
+
+\3-grams:
+-0.3010 <s> CALIBRATE </s>
+-0.3010 <s> START LISTENING
+-0.3010 <s> STOP LISTENING
+-0.3010 START LISTENING </s>
+-0.3010 STOP LISTENING </s>
+
+\end\
